@@ -40,7 +40,7 @@ const removeTokens = () => {
 
 const register = (email: string, username: string, password: string) => api.post({
   username, email, password
-}, "/auth/jwt/create");
+}, "/auth/users/");
 
 const login = (username: string, password: string) => {
   return api.post({ username, password }, "/auth/jwt/create");
