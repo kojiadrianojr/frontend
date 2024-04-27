@@ -1,11 +1,12 @@
 import wretch, {Wretch, WretchError} from "wretch";
 import { AuthActions } from "./auth/utils";
+import { API_URL } from "./config";
 
 const { handleJWTRefresh, storeToken, getToken } = AuthActions();
 
 const api = () => {
   return (
-    wretch(process.env.API)
+    wretch(API_URL)
     .auth(`Bearer ${getToken("access")}`)
     .catcher(401, async(error: WretchError, request: Wretch) => {
       try {

@@ -1,8 +1,9 @@
 import Cookies from "js-cookie";
 import wretch from "wretch";
+import { API_URL } from "../config";
 
 // Setup for http request
-const api = wretch(process.env.API).accept("application/json");
+const api = wretch(API_URL).accept("application/json");
 
 /**
  * Store a token in cookies
@@ -38,11 +39,11 @@ const removeTokens = () => {
  */
 
 const register = (email: string, username: string, password: string) => api.post({
-  username: email, password
+  username, email, password
 }, "/auth/jwt/create");
 
-const login = (email: string, password: string) => {
-  return api.post({ username: email, password }, "/auth/jwt/create");
+const login = (username: string, password: string) => {
+  return api.post({ username, password }, "/auth/jwt/create");
 };
 
 const logout = () => {
