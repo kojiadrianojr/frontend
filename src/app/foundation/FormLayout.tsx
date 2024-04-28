@@ -21,7 +21,7 @@ const FormCard = ({ children, ...rest }: Props) => {
     <Card raised sx={{ p: 5,
       width: {
         xs: '100vw',
-        md: '25vw',
+        sm: '50vw',
         xl: '50vw',
       }
     }} {...rest}>

@@ -1,9 +1,10 @@
+import { ReactNode } from "react";
 import { toast } from "react-toastify";
 
-export const useToast = (config?: any) => {
+export const useToast = () => {
   const handleToast = (payload: {
     type: "warn" | "success" | "error";
-    message: string;
+    message: string | ReactNode;
   }) => {
     const { type, message } = payload;
     return toast[`${type}`](message);

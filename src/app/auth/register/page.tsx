@@ -2,7 +2,7 @@
 
 import Register from "../../feature/Register";
 
-export default function RegisterPage() {
+export default function Page() {
   return (
     <main>
       <Register />

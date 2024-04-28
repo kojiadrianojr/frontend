@@ -8,6 +8,7 @@ import "@fontsource/roboto/700.css";
 import "./globals.css";
 import { ToastContainer } from "react-toastify";
 
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {

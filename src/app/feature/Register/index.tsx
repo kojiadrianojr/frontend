@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { FormBox, FormCard, FormContainer } from "@/app/foundation/FormLayout";
 import { AccountCircle, Email, Key } from "@mui/icons-material";
-import { useHandleErrors } from "@/app/auth/hooks";
+import { handleErrors } from "@/app/auth/hooks";
 
 const Register = () => {
   const {
@@ -38,7 +38,7 @@ const Register = () => {
           message: err.json.detail,
         });
 
-        handleToast({ type: "error", message: useHandleErrors(err.json) });
+        handleToast({ type: "error", message: handleErrors(err.json) });
       });
   };
 
