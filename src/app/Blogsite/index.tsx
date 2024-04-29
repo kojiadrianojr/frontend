@@ -16,13 +16,19 @@ import {
 import { useToast } from "../feature/Toast";
 import { Add } from "@mui/icons-material";
 import dataActions from "./hooks";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import BlogItem from "./foundation/BlogItem";
 import { AVATAR_URL } from "../config";
+import SearchFilterSort from "../foundation/Filters";
 
 export default function Blogsite() {
-  const [data, setData] = useState([]);
+  const dataRef:any = useRef(); // Storage of data for reference
+  const [data, setData] = useState(dataRef.current);
+
   const router = useRouter();
+  const [query, setQuery] = useState<string>("");
+  const [filter, setFilter] = useState<string>("");
+  const [sort, setSort] = useState<string>("");
   const { handleToast } = useToast();
   const { data: user } = useSWR("/auth/users/me", fetcher);
   const { logout, removeTokens } = AuthActions();
@@ -31,10 +37,84 @@ export default function Blogsite() {
   useEffect(() => {
     const handleFetchData = async () => {
       const res = await fetchData().res((r) => r.json());
+      dataRef.current = res;
+    };
+
+    handleFetchData().catch(console.error);
+    setData(dataRef.current);
+  }, [fetchData, dataRef.current]);
+
+  const onSearch = (q: string) => setQuery(q);
+  const onFilter = (q: string) => setFilter(q);
+  const onSort = (q: string) => setSort(q);
+
+  // //  For handling search
+  useEffect(() => {
+    const handleSearch = () => {
+      if (!query) {
+        setData(dataRef.current);
+      }
+      const q = query.toLowerCase();
+      const res = dataRef.current?.filter((item: any) => {
+        return (
+          item?.owner.toLowerCase().includes(q) ||
+          item?.title.toLowerCase().includes(q) ||
+          item?.description.toLowerCase().includes(q)
+        );
+      });
       setData(res);
     };
-    handleFetchData().catch(console.error);
-  }, [fetchData]);
+    if (!dataRef.current) {
+      return;
+    }
+    handleSearch();
+  }, [query]);
+
+  // //  For handling filter
+  // useEffect(() => {
+  //   const handleFilter = () => {
+  //     switch (filter) {
+  //       case "mine":
+  //         const res = data.filter((item: any) => item.owner === user?.username);
+  //         setData(res);
+  //         break;
+  //       default:
+  //         applyDefaultData();
+  //         break;
+  //     }
+  //   };
+  //   handleFilter();
+  // }, [filter]);
+
+  // // For handling sort
+  // useEffect(() => {
+  //   const compareDates = (
+  //     arg1: { [key: string]: string },
+  //     arg2: { [key: string]: string }
+  //   ) => {
+  //     const date1: any = new Date(arg1.created);
+  //     const date2: any = new Date(arg2.created);
+
+  //     return date1 - date2;
+  //   };
+  //   const handleSort = () => {
+  //     let res;
+  //     switch (sort) {
+  //       case "recent":
+  //         res = [...data].sort(compareDates).reverse();
+  //         setData(res);
+  //         break;
+  //       case "oldest":
+  //         res = [...data].sort(compareDates);
+  //         setData(res);
+  //         break;
+  //       default:
+  //         applyDefaultData();
+  //         break;
+  //     }
+  //   };
+  //   handleSort();
+  // }, [sort]);
 
   const handleLogout = () => {
     logout()
@@ -75,14 +155,18 @@ export default function Blogsite() {
           p: 5,
           width: {
             xs: "100%",
-            md: "50%",
+            md: "40%",
           },
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <div className="flex flex-col items-center">
             <h1 className="text-2xl font-bold mb-4">Hi, {user?.username}!</h1>
-            <Avatar alt={user?.username} src={avatarUrl} className="mr-2 w-20 h-20" />
+            <Avatar
+              alt={user?.username}
+              src={avatarUrl}
+              className="mr-2 w-20 h-20"
+            />
           </div>
           <Button onClick={handleLogout} variant="outlined" color="error">
             Disconnect
@@ -90,12 +174,19 @@ export default function Blogsite() {
         </Box>
       </Card>
       <Card sx={{ mt: 4, p: 5 }}>
+        <SearchFilterSort
+          onSearch={onSearch}
+          onFilter={onFilter}
+          onSort={onSort}
+        />
+      </Card>
+      <Card sx={{ mt: 4, p: 5 }}>
         <div className="mt-2 mb-2">
           <Button onClick={() => router.push("/add")} startIcon={<Add />}>
             Write new post
           </Button>
         </div>
-        <Grid container spacing={2} alignItems="center">
+        <Grid container spacing={2}>
           {!data ? (
             <p> None found </p>
           ) : (
@@ -105,6 +196,7 @@ export default function Blogsite() {
                   id={item.id}
                   owner={item.owner}
                   title={item.title}
+                  created={item.created}
                   description={item.description}
                   onEdit={() => router.push(`/update/${item.id}`)}
                   onDelete={handleDelete}

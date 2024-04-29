@@ -3,6 +3,7 @@ export type Props = {
   owner: string;
   title: string;
   description: string;
+  created: string;
   onEdit: any;
   onDelete: any;
 }
