@@ -1,23 +1,14 @@
 "use client";
 
 import useSWR from "swr";
+import { useEffect, useState } from "react";
 import { fetcher } from "@/app/fetcher";
 import { AuthActions } from "@/app/auth/utils";
 import { useRouter } from "next/navigation";
-import {
-  Avatar,
-  Box,
-  Button,
-  Card,
-  Container,
-  Grid,
-  IconButton,
-  Typography,
-} from "@mui/material";
-import { useToast } from "../feature/Toast";
+import { Avatar, Box, Button, Card, Container, Grid } from "@mui/material";
 import { Add } from "@mui/icons-material";
+import { useToast } from "../feature/Toast";
 import dataActions from "./hooks";
-import { useEffect, useMemo, useRef, useState } from "react";
 import BlogItem from "./foundation/BlogItem";
 import { AVATAR_URL } from "../config";
 import SearchFilterSort from "../foundation/Filters";
@@ -103,6 +94,7 @@ export default function Blogsite() {
 
       return date1 - date2;
     };
+
     const handleSort = () => {
       let res;
       switch (sort) {
@@ -114,8 +106,15 @@ export default function Blogsite() {
           res = [...data].sort(compareDates);
           setData(res);
           break;
+        case "content":
+          res = [...data].sort(
+            (a: { [key: string]: string }, b: { [key: string]: string }) =>
+              a.description.localeCompare(b.description)
+          );
+          setData(res);
+          break;
         default:
-          setData(data);
+          setData(fetchedData);
           break;
       }
     };
@@ -144,6 +143,7 @@ export default function Blogsite() {
 
   const handleDelete = (id: number) => {
     setData((items) => items.filter((item: any) => item.id !== id));
+    setFetchedData((items) => items.filter((item: any) => item.id !== id));
   };
   return (
     <Container
@@ -190,7 +190,7 @@ export default function Blogsite() {
             Write new post
           </Button>
         </div>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} alignItems="baseline">
           {data &&
             data.map((item: any) => (
               <Grid item key={item.id} xs={12} md={6}>

@@ -42,7 +42,7 @@ const BlogItem = (props: Props) => {
           <IconButton onClick={onDelete}>
             <Delete
               onClick={() => {
-                // deleteBlog(id);
+                deleteBlog(id);
                 onDelete(id);
               }}
             />
