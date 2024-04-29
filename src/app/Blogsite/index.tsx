@@ -5,7 +5,15 @@ import { useEffect, useState } from "react";
 import { fetcher } from "@/app/fetcher";
 import { AuthActions } from "@/app/auth/utils";
 import { useRouter } from "next/navigation";
-import { Avatar, Box, Button, Card, Container, Grid } from "@mui/material";
+import {
+  Avatar,
+  Box,
+  Button,
+  Card,
+  Container,
+  Grid,
+  Typography,
+} from "@mui/material";
 import { Add } from "@mui/icons-material";
 import { useToast } from "../feature/Toast";
 import dataActions from "./hooks";
@@ -164,17 +172,25 @@ export default function Blogsite() {
         }}
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
-          <div className="flex flex-col items-center">
-            <h1 className="text-2xl font-bold mb-4">Hi, {user?.username}!</h1>
-            <Avatar
-              alt={user?.username}
-              src={avatarUrl}
-              className="mr-2 w-20 h-20"
-            />
-          </div>
-          <Button onClick={handleLogout} variant="outlined" color="error">
-            Disconnect
-          </Button>
+          {user ? (
+            <>
+              <Typography className="flex flex-col items-center">
+                <h1 className="text-2xl font-bold mb-4">
+                  Hi, {user?.username}!
+                </h1>
+                <Avatar
+                  alt={user?.username}
+                  src={avatarUrl}
+                  className="mr-2 w-20 h-20"
+                />
+              </Typography>
+              <Button onClick={handleLogout} variant="outlined" color="error">
+                Disconnect
+              </Button>
+            </>
+          ) : (
+            <Typography className="text-2xl font-bold mb-4">Hello, Guest!</Typography>
+          )}
         </Box>
       </Card>
       <Card sx={{ mt: 4, p: 5 }}>
@@ -185,11 +201,13 @@ export default function Blogsite() {
         />
       </Card>
       <Card sx={{ mt: 4, p: 5 }}>
-        <div className="mt-2 mb-2">
-          <Button onClick={() => router.push("/add")} startIcon={<Add />}>
-            Write new post
-          </Button>
-        </div>
+        {user && (
+          <div className="mt-2 mb-2">
+            <Button onClick={() => router.push("/add")} startIcon={<Add />}>
+              Write new post
+            </Button>
+          </div>
+        )}
         <Grid container spacing={2} alignItems="baseline">
           {data &&
             data.map((item: any) => (
