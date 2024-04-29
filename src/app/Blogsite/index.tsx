@@ -12,50 +12,57 @@ import {
   Container,
   Grid,
   IconButton,
+  Typography,
 } from "@mui/material";
 import { useToast } from "../feature/Toast";
 import { Add } from "@mui/icons-material";
 import dataActions from "./hooks";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import BlogItem from "./foundation/BlogItem";
 import { AVATAR_URL } from "../config";
 import SearchFilterSort from "../foundation/Filters";
 
 export default function Blogsite() {
-  const dataRef:any = useRef(); // Storage of data for reference
-  const [data, setData] = useState(dataRef.current);
-
+  const { logout, removeTokens } = AuthActions();
+  const { fetchData } = dataActions();
   const router = useRouter();
+  const { handleToast } = useToast();
+
+  const [fetchedData, setFetchedData] = useState([]);
+  const [data, setData] = useState([]);
   const [query, setQuery] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
   const [sort, setSort] = useState<string>("");
-  const { handleToast } = useToast();
+
   const { data: user } = useSWR("/auth/users/me", fetcher);
-  const { logout, removeTokens } = AuthActions();
-  const { fetchData } = dataActions();
+  const avatarUrl = `${AVATAR_URL}/set/${user?.username}.svg`;
 
   useEffect(() => {
     const handleFetchData = async () => {
-      const res = await fetchData().res((r) => r.json());
-      dataRef.current = res;
+      try {
+        const response = await fetchData().res((r) => r.json());
+        setData(response);
+        setFetchedData(response);
+        console.log("data:", response);
+      } catch (err) {
+        console.error(err);
+      }
     };
-
-    handleFetchData().catch(console.error);
-    setData(dataRef.current);
-  }, [fetchData, dataRef.current]);
+    handleFetchData();
+  }, []);
 
   const onSearch = (q: string) => setQuery(q);
   const onFilter = (q: string) => setFilter(q);
   const onSort = (q: string) => setSort(q);
 
-  // //  For handling search
+  //  For handling search
   useEffect(() => {
     const handleSearch = () => {
       if (!query) {
-        setData(dataRef.current);
+        setData(fetchedData);
       }
       const q = query.toLowerCase();
-      const res = dataRef.current?.filter((item: any) => {
+      const res = fetchedData.filter((item: any) => {
         return (
           item?.owner.toLowerCase().includes(q) ||
           item?.title.toLowerCase().includes(q) ||
@@ -64,57 +71,56 @@ export default function Blogsite() {
       });
       setData(res);
     };
-    if (!dataRef.current) {
-      return;
-    }
     handleSearch();
   }, [query]);
 
-  // //  For handling filter
-  // useEffect(() => {
-  //   const handleFilter = () => {
-  //     switch (filter) {
-  //       case "mine":
-  //         const res = data.filter((item: any) => item.owner === user?.username);
-  //         setData(res);
-  //         break;
-  //       default:
-  //         applyDefaultData();
-  //         break;
-  //     }
-  //   };
-  //   handleFilter();
-  // }, [filter]);
+  //  For handling filter
+  useEffect(() => {
+    const handleFilter = () => {
+      switch (filter) {
+        case "mine":
+          const res = fetchedData.filter(
+            (item: any) => item.owner === user?.username
+          );
+          setData(res);
+          break;
+        default:
+          setData(fetchedData);
+          break;
+      }
+    };
+    handleFilter();
+  }, [filter]);
 
-  // // For handling sort
-  // useEffect(() => {
-  //   const compareDates = (
-  //     arg1: { [key: string]: string },
-  //     arg2: { [key: string]: string }
-  //   ) => {
-  //     const date1: any = new Date(arg1.created);
-  //     const date2: any = new Date(arg2.created);
+  // For handling sort
+  useEffect(() => {
+    const compareDates = (
+      arg1: { [key: string]: string },
+      arg2: { [key: string]: string }
+    ) => {
+      const date1: any = new Date(arg1.created);
+      const date2: any = new Date(arg2.created);
 
-  //     return date1 - date2;
-  //   };
-  //   const handleSort = () => {
-  //     let res;
-  //     switch (sort) {
-  //       case "recent":
-  //         res = [...data].sort(compareDates).reverse();
-  //         setData(res);
-  //         break;
-  //       case "oldest":
-  //         res = [...data].sort(compareDates);
-  //         setData(res);
-  //         break;
-  //       default:
-  //         applyDefaultData();
-  //         break;
-  //     }
-  //   };
-  //   handleSort();
-  // }, [sort]);
+      return date1 - date2;
+    };
+    const handleSort = () => {
+      let res;
+      switch (sort) {
+        case "recent":
+          res = [...data].sort(compareDates).reverse();
+          setData(res);
+          break;
+        case "oldest":
+          res = [...data].sort(compareDates);
+          setData(res);
+          break;
+        default:
+          setData(data);
+          break;
+      }
+    };
+    handleSort();
+  }, [sort]);
 
   const handleLogout = () => {
     logout()
@@ -139,8 +145,6 @@ export default function Blogsite() {
   const handleDelete = (id: number) => {
     setData((items) => items.filter((item: any) => item.id !== id));
   };
-
-  const avatarUrl = `${AVATAR_URL}/set/${user?.username}.svg`;
   return (
     <Container
       sx={{
@@ -187,9 +191,7 @@ export default function Blogsite() {
           </Button>
         </div>
         <Grid container spacing={2}>
-          {!data ? (
-            <p> None found </p>
-          ) : (
+          {data &&
             data.map((item: any) => (
               <Grid item key={item.id} xs={12} md={6}>
                 <BlogItem
@@ -202,8 +204,7 @@ export default function Blogsite() {
                   onDelete={handleDelete}
                 />
               </Grid>
-            ))
-          )}
+            ))}
         </Grid>
       </Card>
     </Container>
