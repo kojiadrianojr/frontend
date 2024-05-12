@@ -2,7 +2,13 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, install requirements:
+
+```bash
+npm run install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
@@ -30,7 +36,7 @@ To learn more about Next.js, take a look at the following resources:
 You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
 ## Deployed on Vercel
-- The appliation is deployed on vercel and can be accessed using this link: https://frontend-lac-nine-49.vercel.app/
+- The application is deployed on vercel and can be accessed using this link: https://frontend-lac-nine-49.vercel.app/
 
 # API
 - The backend api is deployed on https://www.pythonanywhere.com/ and can be checked using this link: https://kojiadrianojr.pythonanywhere.com/

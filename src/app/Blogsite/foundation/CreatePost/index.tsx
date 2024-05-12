@@ -39,17 +39,22 @@ export default function CreatePost() {
       title: data.title,
       description: data.description,
     })
+      .unauthorized((err) => {
+        handleToast({
+          type: "error",
+          message: `${err.status} ${err.json.detail}`,
+        });
+      })
       .json(() => {
         reset();
-        handleToast({ type: "success", message: "Thanks for posting!"})
+        handleToast({ type: "success", message: "Thanks for posting!" });
+        router.push("/Blogsite")
       })
       .catch((err) => {
-
         setError("root", {
           type: "manual",
           message: err.json.detail,
         });
-        // handleToast({ type: "error", message: });
       });
   };
   return (

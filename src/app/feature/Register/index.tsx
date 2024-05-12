@@ -43,11 +43,13 @@ const Register = () => {
   };
 
   return (
-    <FormContainer>
+    <FormContainer className="max-w-md">
       <FormCard>
-        <Typography variant="h4" align="center">
-          REGISTER
-        </Typography>
+        <Box className="text-left mt-3">
+          <Typography variant="h5" fontWeight="bold">
+            Register a new account
+          </Typography>
+        </Box>
         <form onSubmit={handleSubmit(handleSubmitFunction)}>
           <FormBox>
             <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
@@ -88,14 +90,12 @@ const Register = () => {
             />
           </FormBox>
           <Box className="text-center mt-6">
-            <Button type="submit">Register</Button>
-          </Box>
-        </form>
-        <Box className="text-center mt-3">
-          <Button onClick={() => router.push("/")}>
+            <Button fullWidth variant="contained" type="submit">Register</Button>
+            <Button onClick={() => router.push("/")}>
             Already have an account?
           </Button>
-        </Box>
+          </Box>
+        </form>
       </FormCard>
     </FormContainer>
   );

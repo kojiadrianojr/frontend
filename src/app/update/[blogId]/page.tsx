@@ -30,6 +30,7 @@ const Page = ({ params }: { params: any }) => {
     })
       .json(() => {
         handleToast({ type: "success", message: "Updated successfully " });
+        router.push("/Blogsite");
       })
       .catch((err) => {
         console.error(err);
