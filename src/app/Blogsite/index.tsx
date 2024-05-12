@@ -42,7 +42,6 @@ export default function Blogsite() {
         const response = await fetchData().res((r) => r.json());
         setData(response);
         setFetchedData(response);
-        console.log("data:", response);
       } catch (err) {
         console.error(err);
       }
@@ -174,22 +173,24 @@ export default function Blogsite() {
         <Box display="flex" justifyContent="space-between" alignItems="center">
           {user ? (
             <>
-              <Typography className="flex flex-col items-center">
-                <h1 className="text-2xl font-bold mb-4">
+              <div className="flex flex-col items-center">
+                <Typography className="text-2xl font-bold mb-4">
                   Hi, {user?.username}!
-                </h1>
+                </Typography>
                 <Avatar
                   alt={user?.username}
                   src={avatarUrl}
                   className="mr-2 w-20 h-20"
                 />
-              </Typography>
+              </div>
               <Button onClick={handleLogout} variant="outlined" color="error">
                 Disconnect
               </Button>
             </>
           ) : (
-            <Typography className="text-2xl font-bold mb-4">Hello, Guest!</Typography>
+            <Typography className="text-2xl font-bold mb-4">
+              Hello, Guest!
+            </Typography>
           )}
         </Box>
       </Card>
