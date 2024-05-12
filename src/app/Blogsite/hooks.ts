@@ -1,20 +1,33 @@
 import wretch from "wretch";
 import { api } from "../config";
+import { AuthActions } from "../auth/utils";
+
+const retrieveToken = (type: string) => {
+  const { getToken } = AuthActions();
+  return getToken(type);
+};
 
 const fetchData = () => {
-  return api.get("/api/blog/");
+  const accessToken = retrieveToken("access");
+  return api.auth(`Bearer ${accessToken}`).get("/api/blog/");
 };
 
 const deleteBlog = (id: number) => {
-  return api.url(`/api/blog/${id}`).delete();
+  const accessToken = retrieveToken("access");
+  return api.auth(`Bearer ${accessToken}`).url(`/api/blog/${id}`).delete();
 };
 
-const fetchBlog = (id: number) => api.get(`/api/blog/${id}/`);
+const fetchBlog = (id: number) => {
+  const accessToken = retrieveToken("access");
+  return api.auth(`Bearer ${accessToken}`).get(`/api/blog/${id}/`);
+};
+
 const updateBlog = (
   id: number,
   data: { title: string; description: string }
 ) => {
-  return api.url(`/api/blog/${id}/`).patch(data);
+  const accessToken = retrieveToken("access");
+  return api.auth(`Bearer ${accessToken}`).url(`/api/blog/${id}/`).patch(data);
 };
 
 const postBlog = (payload: {
@@ -22,7 +35,8 @@ const postBlog = (payload: {
   title: string;
   description: string;
 }) => {
-  return api.post(payload, "/api/blog/");
+  const accessToken = retrieveToken("access");
+  return api.auth(`Bearer ${accessToken}`).post(payload, "/api/blog/");
 };
 
 const dataActions = () => {
@@ -31,7 +45,7 @@ const dataActions = () => {
     deleteBlog,
     postBlog,
     fetchBlog,
-    updateBlog
+    updateBlog,
   };
 };
 

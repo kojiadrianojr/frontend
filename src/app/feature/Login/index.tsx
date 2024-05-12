@@ -46,11 +46,16 @@ const Login = () => {
       });
   };
   return (
-    <FormContainer>
+    <FormContainer className="max-w-md">
       <FormCard>
-        <Typography variant="h4" align="center">
-          LOGIN
-        </Typography>
+        <Box className="mt-3 text-left">
+          <Typography variant="h5" fontWeight='bold'>
+            Sign in to your account
+          </Typography>
+          <Button onClick={() => router.push("/auth/register")}>
+            <span className="text-gray-500">New user?</span> &nbsp; Register here
+          </Button>
+        </Box>
         <form onSubmit={handleSubmit(handleSubmitFunction)}>
           <FormBox>
             <AccountCircle sx={{ color: "action.active", mr: 1, my: 0.5 }} />
@@ -80,14 +85,9 @@ const Login = () => {
             />
           </FormBox>
           <Box className="text-center mt-6">
-            <Button type="submit">Login</Button>
+            <Button fullWidth variant="contained" type="submit">Login</Button>
           </Box>
         </form>
-        <Box className="mt-3 text-center">
-          <Button onClick={() => router.push('/auth/register')}>
-            New user? Register here
-          </Button>
-        </Box>
       </FormCard>
     </FormContainer>
   );
