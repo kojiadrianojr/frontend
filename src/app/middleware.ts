@@ -1,17 +1,19 @@
-import { NextResponse } from "next/server";
-import { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { cookies } from "next/headers";
 
 export function middleware(request: NextRequest) {
   const cookieStore = cookies();
-  const accessToken = cookieStore.get("accesssToken");
+  const accessToken = cookieStore.get("accessToken");
 
-  if (!accessToken && request.nextUrl.pathname !== "/") {
+  if (accessToken && request.nextUrl.pathname === "/") {
     return NextResponse.redirect(new URL("/Blogsite", request.url));
   }
- 
-  return NextResponse.next();
 
+  if (!accessToken && request.nextUrl.pathname !== "/") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {
